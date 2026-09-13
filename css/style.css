@@ -1306,3 +1306,10 @@ footer {
     }
 
 }
+/* =====================================================
+   EVENT LINK VISIBILITY
+===================================================== */
+
+.event-section[style*="display: none"] {
+    display: none !important;
+}
