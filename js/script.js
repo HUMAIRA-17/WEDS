@@ -1,6 +1,6 @@
 /* =====================================================
    WEDDING INVITATION
-   EVENT LINK SYSTEM
+   MULTIPLE EVENT LINK SYSTEM
 ===================================================== */
 
 
@@ -19,59 +19,38 @@ const walima = document.getElementById("walima");
 
 
 /* =====================================================
-   GET INVITATION CODE
+   EVENT LINK SYSTEM
 ===================================================== */
 
-function getInvitationCode() {
+function applyInvitationCode() {
 
-    let code = window.location.hash
-        .substring(1)
-        .toLowerCase()
-        .trim();
+    let code = window.location.hash.substring(1).toLowerCase();
 
-    /*
-       If no code is provided,
-       show all events.
-    */
+    console.log("Invitation code:", code);
 
-    if (!code) {
-        return "mbw";
+
+    /* If no code is present, show everything */
+
+    if (code === "") {
+        code = "mbw";
     }
 
-    /*
-       Only allow these codes
-    */
 
-    const validCodes = [
-        "m",
-        "b",
-        "w",
-        "mb",
-        "bw",
-        "mw",
-        "mbw"
-    ];
+    /* Valid codes */
+
+    const validCodes = ["m", "b", "w", "mb", "bw", "mw", "mbw"];
+
+
+    /* Invalid code = show everything */
 
     if (!validCodes.includes(code)) {
-        return "mbw";
+        code = "mbw";
     }
 
-    return code;
-}
 
-
-/* =====================================================
-   SHOW ONLY SELECTED EVENTS
-===================================================== */
-
-function setupInvitation() {
-
-    const code = getInvitationCode();
-
-
-    /* -----------------------------------------------
+    /* =================================================
        HIDE ALL EVENTS FIRST
-    ------------------------------------------------ */
+    ================================================= */
 
     if (mehendi) {
         mehendi.style.display = "none";
@@ -86,50 +65,54 @@ function setupInvitation() {
     }
 
 
-    /* -----------------------------------------------
-       SHOW MEHENDI
-    ------------------------------------------------ */
+    /* =================================================
+       SHOW SELECTED EVENTS
+    ================================================= */
 
-    if (code.includes("m") && mehendi) {
-        mehendi.style.display = "flex";
+    if (code.includes("m")) {
+
+        if (mehendi) {
+            mehendi.style.display = "";
+        }
+
     }
 
 
-    /* -----------------------------------------------
-       SHOW BARAT
-    ------------------------------------------------ */
+    if (code.includes("b")) {
 
-    if (code.includes("b") && barat) {
-        barat.style.display = "flex";
+        if (barat) {
+            barat.style.display = "";
+        }
+
     }
 
 
-    /* -----------------------------------------------
-       SHOW WALIMA
-    ------------------------------------------------ */
+    if (code.includes("w")) {
 
-    if (code.includes("w") && walima) {
-        walima.style.display = "flex";
+        if (walima) {
+            walima.style.display = "";
+        }
+
     }
 
 
-    console.log("Invitation code:", code);
+    console.log("Showing events for:", code);
 
 }
 
 
 /* Run immediately */
 
-setupInvitation();
+applyInvitationCode();
 
 
 /* =====================================================
-   OPEN INVITATION
+   OPEN INVITATION + MUSIC
 ===================================================== */
 
 if (openInvitation) {
 
-    openInvitation.addEventListener("click", function() {
+    openInvitation.addEventListener("click", function () {
 
         /* Start music */
 
@@ -137,9 +120,9 @@ if (openInvitation) {
 
             weddingMusic.volume = 0.35;
 
-            weddingMusic.play().catch(function(error) {
+            weddingMusic.play().catch(function (error) {
 
-                console.log("Music error:", error);
+                console.log("Music could not start:", error);
 
             });
 
@@ -160,12 +143,12 @@ if (openInvitation) {
         }
 
 
-        /* Stop scrolling during animation */
+        /* Prevent scrolling during animation */
 
         document.body.style.overflow = "hidden";
 
 
-        setTimeout(function() {
+        setTimeout(function () {
 
             document.body.style.overflow = "";
 
@@ -177,7 +160,7 @@ if (openInvitation) {
 
 
 /* =====================================================
-   EVENT SCROLL ANIMATION
+   EVENT ANIMATION
 ===================================================== */
 
 const eventContents = document.querySelectorAll(".event-content");
@@ -185,9 +168,9 @@ const eventContents = document.querySelectorAll(".event-content");
 
 const observer = new IntersectionObserver(
 
-    function(entries) {
+    function (entries) {
 
-        entries.forEach(function(entry) {
+        entries.forEach(function (entry) {
 
             if (entry.isIntersecting) {
 
@@ -200,50 +183,14 @@ const observer = new IntersectionObserver(
     },
 
     {
-        threshold: 0.2
+        threshold: 0.15
     }
 
 );
 
 
-eventContents.forEach(function(content) {
+eventContents.forEach(function (content) {
 
     observer.observe(content);
-
-});
-
-
-/* =====================================================
-   SMOOTH SCROLL
-===================================================== */
-
-document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-
-    anchor.addEventListener("click", function(event) {
-
-        const targetID = this.getAttribute("href");
-
-        /*
-           Don't interfere with event-selection hash.
-        */
-
-        if (!targetID || targetID === "#") {
-            return;
-        }
-
-        const target = document.querySelector(targetID);
-
-        if (target) {
-
-            event.preventDefault();
-
-            target.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-        }
-
-    });
 
 });
