@@ -1,5 +1,11 @@
 /* =====================================================
-   WEDDING INVITATION LINK SYSTEM
+   WEDDING INVITATION
+   EVENT LINK SYSTEM
+===================================================== */
+
+
+/* =====================================================
+   GET ELEMENTS
 ===================================================== */
 
 const openingScreen = document.getElementById("openingScreen");
@@ -13,140 +19,161 @@ const walima = document.getElementById("walima");
 
 
 /* =====================================================
-   READ INVITATION CODE FROM URL
+   GET INVITATION CODE
 ===================================================== */
 
-let invitationCode = window.location.hash
-    .replace("#", "")
-    .toLowerCase()
-    .trim();
+function getInvitationCode() {
 
+    let code = window.location.hash
+        .substring(1)
+        .toLowerCase()
+        .trim();
 
-/*
-    If no code is provided,
-    show all events.
-*/
+    /*
+       If no code is provided,
+       show all events.
+    */
 
-if (!invitationCode) {
-    invitationCode = "mbw";
+    if (!code) {
+        return "mbw";
+    }
+
+    /*
+       Only allow these codes
+    */
+
+    const validCodes = [
+        "m",
+        "b",
+        "w",
+        "mb",
+        "bw",
+        "mw",
+        "mbw"
+    ];
+
+    if (!validCodes.includes(code)) {
+        return "mbw";
+    }
+
+    return code;
 }
 
 
 /* =====================================================
-   VALID CODES
+   SHOW ONLY SELECTED EVENTS
 ===================================================== */
 
-const validCodes = [
-    "m",
-    "b",
-    "w",
-    "mb",
-    "bw",
-    "mw",
-    "mbw"
-];
+function setupInvitation() {
+
+    const code = getInvitationCode();
 
 
-/*
-    If someone enters an invalid code,
-    show all events.
-*/
+    /* -----------------------------------------------
+       HIDE ALL EVENTS FIRST
+    ------------------------------------------------ */
 
-if (!validCodes.includes(invitationCode)) {
-    invitationCode = "mbw";
+    if (mehendi) {
+        mehendi.style.display = "none";
+    }
+
+    if (barat) {
+        barat.style.display = "none";
+    }
+
+    if (walima) {
+        walima.style.display = "none";
+    }
+
+
+    /* -----------------------------------------------
+       SHOW MEHENDI
+    ------------------------------------------------ */
+
+    if (code.includes("m") && mehendi) {
+        mehendi.style.display = "flex";
+    }
+
+
+    /* -----------------------------------------------
+       SHOW BARAT
+    ------------------------------------------------ */
+
+    if (code.includes("b") && barat) {
+        barat.style.display = "flex";
+    }
+
+
+    /* -----------------------------------------------
+       SHOW WALIMA
+    ------------------------------------------------ */
+
+    if (code.includes("w") && walima) {
+        walima.style.display = "flex";
+    }
+
+
+    console.log("Invitation code:", code);
+
 }
 
 
-/* =====================================================
-   HIDE / SHOW EVENTS
-===================================================== */
+/* Run immediately */
 
-function setupEvents() {
-
-    /*
-        Hide everything first
-    */
-
-    mehendi.classList.add("hidden-event");
-    barat.classList.add("hidden-event");
-    walima.classList.add("hidden-event");
-
-
-    /*
-        Show selected events
-    */
-
-    if (invitationCode.includes("m")) {
-        mehendi.classList.remove("hidden-event");
-    }
-
-    if (invitationCode.includes("b")) {
-        barat.classList.remove("hidden-event");
-    }
-
-    if (invitationCode.includes("w")) {
-        walima.classList.remove("hidden-event");
-    }
-
-}
-
-
-/* Run event setup */
-
-setupEvents();
+setupInvitation();
 
 
 /* =====================================================
-   OPEN INVITATION + MUSIC
+   OPEN INVITATION
 ===================================================== */
 
-openInvitation.addEventListener("click", function () {
+if (openInvitation) {
 
-    /*
-        Start music
-    */
+    openInvitation.addEventListener("click", function() {
 
-    weddingMusic.volume = 0.35;
+        /* Start music */
 
-    weddingMusic.play().catch(function(error) {
+        if (weddingMusic) {
 
-        console.log("Music could not start:", error);
+            weddingMusic.volume = 0.35;
+
+            weddingMusic.play().catch(function(error) {
+
+                console.log("Music error:", error);
+
+            });
+
+        }
+
+
+        /* Show main invitation */
+
+        if (mainInvitation) {
+            mainInvitation.classList.add("visible");
+        }
+
+
+        /* Hide opening screen */
+
+        if (openingScreen) {
+            openingScreen.classList.add("opened");
+        }
+
+
+        /* Stop scrolling during animation */
+
+        document.body.style.overflow = "hidden";
+
+
+        setTimeout(function() {
+
+            document.body.style.overflow = "";
+
+        }, 1200);
 
     });
 
-
-    /*
-        Show invitation
-    */
-
-    mainInvitation.classList.add("visible");
-
-
-    /*
-        Fade opening screen
-    */
-
-    openingScreen.classList.add("opened");
-
-
-    /*
-        Prevent scrolling during opening
-    */
-
-    document.body.style.overflow = "hidden";
-
-
-    /*
-        Enable scrolling after animation
-    */
-
-    setTimeout(function() {
-
-        document.body.style.overflow = "";
-
-    }, 1200);
-
-});
+}
 
 
 /* =====================================================
@@ -194,13 +221,21 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 
     anchor.addEventListener("click", function(event) {
 
-        event.preventDefault();
+        const targetID = this.getAttribute("href");
 
-        const target = document.querySelector(
-            this.getAttribute("href")
-        );
+        /*
+           Don't interfere with event-selection hash.
+        */
 
-        if (target && !target.classList.contains("hidden-event")) {
+        if (!targetID || targetID === "#") {
+            return;
+        }
+
+        const target = document.querySelector(targetID);
+
+        if (target) {
+
+            event.preventDefault();
 
             target.scrollIntoView({
                 behavior: "smooth",
