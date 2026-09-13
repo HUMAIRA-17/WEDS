@@ -5,114 +5,174 @@
 
 
 /* =====================================================
-   GET ELEMENTS
+   GET URL CODE
 ===================================================== */
 
-const openingScreen = document.getElementById("openingScreen");
-const openInvitation = document.getElementById("openInvitation");
-const mainInvitation = document.getElementById("mainInvitation");
-const weddingMusic = document.getElementById("weddingMusic");
+function getInvitationCode() {
 
-const mehendi = document.getElementById("mehendi");
-const barat = document.getElementById("barat");
-const walima = document.getElementById("walima");
+    const hash = window.location.hash;
+
+    let code = hash.replace("#", "").toLowerCase().trim();
+
+    /*
+       No code = show all
+    */
+
+    if (code === "") {
+        return "mbw";
+    }
+
+
+    /*
+       Allowed invitation codes
+    */
+
+    const validCodes = [
+        "m",
+        "b",
+        "w",
+        "mb",
+        "bw",
+        "mw",
+        "mbw"
+    ];
+
+
+    /*
+       Invalid code = show all
+    */
+
+    if (!validCodes.includes(code)) {
+        return "mbw";
+    }
+
+
+    return code;
+}
 
 
 /* =====================================================
-   EVENT LINK SYSTEM
+   SET EVENT VISIBILITY
 ===================================================== */
 
-function applyInvitationCode() {
+function setInvitationEvents() {
 
-    let code = window.location.hash.substring(1).toLowerCase();
-
-    console.log("Invitation code:", code);
+    const code = getInvitationCode();
 
 
-    /* If no code is present, show everything */
-
-    if (code === "") {
-        code = "mbw";
-    }
-
-
-    /* Valid codes */
-
-    const validCodes = ["m", "b", "w", "mb", "bw", "mw", "mbw"];
+    console.log("================================");
+    console.log("WEDDING INVITATION");
+    console.log("URL:", window.location.href);
+    console.log("CODE:", code);
+    console.log("================================");
 
 
-    /* Invalid code = show everything */
+    /*
+       Get event sections
+    */
 
-    if (!validCodes.includes(code)) {
-        code = "mbw";
-    }
+    const mehendi = document.getElementById("mehendi");
+    const barat = document.getElementById("barat");
+    const walima = document.getElementById("walima");
 
 
-    /* =================================================
-       HIDE ALL EVENTS FIRST
-    ================================================= */
+    /*
+       Remove visibility from ALL events
+    */
 
     if (mehendi) {
-        mehendi.style.display = "none";
+        mehendi.classList.remove("event-visible");
     }
 
     if (barat) {
-        barat.style.display = "none";
+        barat.classList.remove("event-visible");
     }
 
     if (walima) {
-        walima.style.display = "none";
+        walima.classList.remove("event-visible");
     }
 
 
-    /* =================================================
-       SHOW SELECTED EVENTS
-    ================================================= */
+    /*
+       Show MEHENDI
+    */
 
     if (code.includes("m")) {
 
         if (mehendi) {
-            mehendi.style.display = "";
+            mehendi.classList.add("event-visible");
         }
 
     }
 
+
+    /*
+       Show BARAT
+    */
 
     if (code.includes("b")) {
 
         if (barat) {
-            barat.style.display = "";
+            barat.classList.add("event-visible");
         }
 
     }
 
+
+    /*
+       Show WALIMA
+    */
 
     if (code.includes("w")) {
 
         if (walima) {
-            walima.style.display = "";
+            walima.classList.add("event-visible");
         }
 
     }
 
-
-    console.log("Showing events for:", code);
-
 }
 
 
-/* Run immediately */
+/* =====================================================
+   RUN EVENT FILTER
+===================================================== */
 
-applyInvitationCode();
+setInvitationEvents();
 
 
 /* =====================================================
-   OPEN INVITATION + MUSIC
+   UPDATE IF URL HASH CHANGES
 ===================================================== */
+
+window.addEventListener("hashchange", function () {
+
+    setInvitationEvents();
+
+});
+
+
+/* =====================================================
+   OPENING SCREEN
+===================================================== */
+
+const openingScreen =
+    document.getElementById("openingScreen");
+
+const openInvitation =
+    document.getElementById("openInvitation");
+
+const mainInvitation =
+    document.getElementById("mainInvitation");
+
+const weddingMusic =
+    document.getElementById("weddingMusic");
+
 
 if (openInvitation) {
 
     openInvitation.addEventListener("click", function () {
+
 
         /* Start music */
 
@@ -122,28 +182,35 @@ if (openInvitation) {
 
             weddingMusic.play().catch(function (error) {
 
-                console.log("Music could not start:", error);
+                console.log(
+                    "Music could not start:",
+                    error
+                );
 
             });
 
         }
 
 
-        /* Show main invitation */
+        /* Show invitation */
 
         if (mainInvitation) {
+
             mainInvitation.classList.add("visible");
+
         }
 
 
         /* Hide opening screen */
 
         if (openingScreen) {
+
             openingScreen.classList.add("opened");
+
         }
 
 
-        /* Prevent scrolling during animation */
+        /* Lock scrolling temporarily */
 
         document.body.style.overflow = "hidden";
 
@@ -160,33 +227,35 @@ if (openInvitation) {
 
 
 /* =====================================================
-   EVENT ANIMATION
+   EVENT SCROLL ANIMATION
 ===================================================== */
 
-const eventContents = document.querySelectorAll(".event-content");
+const eventContents =
+    document.querySelectorAll(".event-content");
 
 
-const observer = new IntersectionObserver(
+const observer =
+    new IntersectionObserver(
 
-    function (entries) {
+        function (entries) {
 
-        entries.forEach(function (entry) {
+            entries.forEach(function (entry) {
 
-            if (entry.isIntersecting) {
+                if (entry.isIntersecting) {
 
-                entry.target.classList.add("show");
+                    entry.target.classList.add("show");
 
-            }
+                }
 
-        });
+            });
 
-    },
+        },
 
-    {
-        threshold: 0.15
-    }
+        {
+            threshold: 0.15
+        }
 
-);
+    );
 
 
 eventContents.forEach(function (content) {

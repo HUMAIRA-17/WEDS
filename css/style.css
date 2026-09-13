@@ -1313,3 +1313,24 @@ footer {
 .event-section[style*="display: none"] {
     display: none !important;
 }
+/* =====================================================
+   INVITATION EVENT FILTER
+===================================================== */
+
+/*
+   Events are hidden by default.
+   JavaScript will show only the selected ones.
+*/
+
+.event-section {
+    display: none;
+}
+
+
+/*
+   JavaScript adds this class to selected events.
+*/
+
+.event-section.event-visible {
+    display: flex;
+}
